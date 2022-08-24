@@ -15,9 +15,11 @@ import br.ueg.nutshell.application.dto.UsuarioDTO;
 import br.ueg.nutshell.application.dto.UsuarioSenhaDTO;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
 import br.ueg.nutshell.application.exception.SistemaMessageCode;
+import br.ueg.nutshell.application.model.Ingrediente;
 import br.ueg.nutshell.application.model.TelefoneUsuario;
 import br.ueg.nutshell.application.model.Usuario;
 import br.ueg.nutshell.application.model.UsuarioGrupo;
+import br.ueg.nutshell.application.repository.IngredienteRepository;
 import br.ueg.nutshell.application.repository.UsuarioRepository;
 import br.ueg.nutshell.comum.exception.BusinessException;
 import br.ueg.nutshell.comum.util.CollectionUtil;
@@ -50,7 +52,7 @@ import java.util.Map;
 public class IngredienteService {
 
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private IngredienteRepository ingredienteRepository;
 
 	@Autowired
 	private EmailEngineService emailService;
