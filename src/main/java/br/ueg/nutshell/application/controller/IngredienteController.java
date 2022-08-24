@@ -10,9 +10,12 @@ package br.ueg.nutshell.application.controller;
 
 import br.ueg.nutshell.api.util.Validation;
 import br.ueg.nutshell.application.dto.FiltroUsuarioDTO;
+import br.ueg.nutshell.application.dto.IngredienteDTO;
 import br.ueg.nutshell.application.dto.UsuarioDTO;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
+import br.ueg.nutshell.application.mapper.IngredienteMapper;
 import br.ueg.nutshell.application.mapper.UsuarioMapper;
+import br.ueg.nutshell.application.model.Ingrediente;
 import br.ueg.nutshell.application.model.Usuario;
 import br.ueg.nutshell.application.service.IngredienteService;
 import br.ueg.nutshell.application.service.UsuarioService;
@@ -42,31 +45,31 @@ import java.util.List;
 public class IngredienteController extends AbstractController {
 
 	@Autowired
-	private IngredienteService usuarioService;
+	private IngredienteService ingredienteService;
 
 	@Autowired
-	private UsuarioMapper usuarioMapper;
+	private IngredienteMapper ingredienteMapper;
 
 	/**
 	 * Salva uma instância de {@link Usuario} na base de dados.
 	 * 
-	 * @param usuarioDTO
+	 * @param ingredienteDTO
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ROLE_USUARIO_INCLUIR')")
 	@ApiOperation(value = "Inclui um novo Ingrediente na base de dados.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
-			@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+			@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
 	})
 	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> incluir(@ApiParam(value = "Informações do Usuário", required = true) @Valid @RequestBody UsuarioDTO usuarioDTO) {
-		Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
-		usuarioService.configurarUsuarioGruposAndTelefones(usuario);
-		usuario = usuarioService.salvar(usuario);
-		usuarioDTO = usuarioMapper.toDTO(usuario);
-		return ResponseEntity.ok(usuarioDTO);
+	public ResponseEntity<?> incluir(@ApiParam(value = "Informações do Usuário", required = true) @Valid @RequestBody IngredienteDTO ingredienteDTO) {
+		Ingrediente ingrediente = ingredienteMapper.toEntity(ingredienteDTO);
+		ingredienteService.configurarUsuarioGruposAndTelefones(ingrediente);
+		ingrediente = ingredienteService.salvar(ingrediente);
+		ingredienteDTO = ingredienteMapper.toDTO(ingrediente);
+		return ResponseEntity.ok(ingredienteDTO);
 	}
 
     /**
@@ -86,9 +89,9 @@ public class IngredienteController extends AbstractController {
     public ResponseEntity<?> alterar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id, @ApiParam(value = "Informações do Usuário", required = true) @Valid @RequestBody UsuarioDTO usuarioDTO) {
         Validation.max("id", id, 99999999L);
         Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
-        usuarioService.configurarUsuarioGruposAndTelefones(usuario);
+        ingredienteService.configurarUsuarioGruposAndTelefones(usuario);
         usuario.setId(id.longValue());
-        usuarioService.salvar(usuario);
+        ingredienteService.salvar(usuario);
 		return ResponseEntity.ok(usuarioDTO);
     }
 
@@ -109,7 +112,7 @@ public class IngredienteController extends AbstractController {
 	@GetMapping(path = "/{id:[\\d]+}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<?> getUsuarioById(@ApiParam(value = "Id do Usuario") @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
-		Usuario usuario = usuarioService.getByIdFetch(id.longValue());
+		Usuario usuario = ingredienteService.getByIdFetch(id.longValue());
 		UsuarioDTO usuarioTO = new UsuarioDTO();
 
 		if(usuario != null)
@@ -137,7 +140,7 @@ public class IngredienteController extends AbstractController {
 		String idStatusUsuario = StatusAtivoInativo.ATIVO.getId();
 		filtroDTO.setIdStatus(idStatusUsuario);
 		List<UsuarioDTO> usuariosDTO = new ArrayList<>();
-		List<Usuario> usuarios = usuarioService.getUsuariosByFiltro(filtroDTO);
+		List<Usuario> usuarios = ingredienteService.getUsuariosByFiltro(filtroDTO);
 		if(usuarios != null){
 			for (Usuario usuario: usuarios) {
 				usuariosDTO.add(usuarioMapper.toDTO(usuario));
@@ -163,7 +166,7 @@ public class IngredienteController extends AbstractController {
 	})
 	@GetMapping(path = "/filtro", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<?> getUsuariosByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") final FiltroUsuarioDTO filtroDTO) {
-		List<Usuario> usuarios = usuarioService.getUsuariosByFiltro(filtroDTO);
+		List<Usuario> usuarios = ingredienteService.getUsuariosByFiltro(filtroDTO);
 		List<UsuarioDTO> usuariosDTO = new ArrayList<>();
 		for (Usuario usuario: usuarios) {
 			usuario.setTelefones(null);
@@ -188,7 +191,7 @@ public class IngredienteController extends AbstractController {
 	@PutMapping(path = "/{id:[\\d]+}/inativo", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> inativar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
-		usuarioService.inativar(id.longValue());
+		ingredienteService.inativar(id.longValue());
 		return ResponseEntity.ok().build();
 	}
 
@@ -207,7 +210,7 @@ public class IngredienteController extends AbstractController {
 	@PutMapping(path = "/{id:[\\d]+}/ativo", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> ativar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
-		usuarioService.ativar(id.longValue());
+		ingredienteService.ativar(id.longValue());
 		return ResponseEntity.ok().build();
 	}
 
@@ -224,7 +227,7 @@ public class IngredienteController extends AbstractController {
 	})
 	@GetMapping(path = "cpf/valido/{cpf}")
 	public ResponseEntity<?> validarCpf(@ApiParam(value = "CPF") @PathVariable final String cpf) {
-		usuarioService.validarCpf(cpf);
+		ingredienteService.validarCpf(cpf);
 		return ResponseEntity.ok().build();
 	}
 
@@ -245,7 +248,7 @@ public class IngredienteController extends AbstractController {
 			@ApiParam(value = "Código do Usuário") @PathVariable final BigDecimal id,
 			@ApiParam(value = "CPF") @PathVariable final String cpf) {
 		Validation.max("id", id, 99999999L);
-		usuarioService.validarCpf(cpf, id.longValue());
+		ingredienteService.validarCpf(cpf, id.longValue());
 		return ResponseEntity.ok().build();
 	}
 
@@ -260,7 +263,7 @@ public class IngredienteController extends AbstractController {
 	public ResponseEntity<?> getRelatorioGrupos (
 			@ApiParam(value = "Código do Usuário") @PathVariable final Long idGrupo
 	) throws IOException, JRException {
-		return this.toPDF(usuarioService.gerarRelatorio(idGrupo),"Relatorio-grupo.pdf");
+		return this.toPDF(ingredienteService.gerarRelatorio(idGrupo),"Relatorio-grupo.pdf");
 	}
 
 	//@PreAuthorize("isAuthenticated()")
@@ -272,6 +275,6 @@ public class IngredienteController extends AbstractController {
 	})
 	@GetMapping(path = "/relatorio-usuarios",produces = { MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<?> getRelatorioGrupos2 () throws IOException, JRException {
-		return this.toPDF(usuarioService.gerarRelatorio(null),"Relatorio-grupo2.pdf");
+		return this.toPDF(ingredienteService.gerarRelatorio(null),"Relatorio-grupo2.pdf");
 	}
 }
