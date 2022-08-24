@@ -53,7 +53,7 @@ public @Data class Ingrediente implements Serializable{
 	private StatusAtivoInativo status;
 
 	@EqualsAndHashCode.Exclude
-	@OneToMany(mappedBy = "usuario", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(mappedBy = "ingrediente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<IngredienteTag> tags;
 
 
