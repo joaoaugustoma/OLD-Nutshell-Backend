@@ -8,8 +8,7 @@
  */
 package br.ueg.nutshell.application.dto;
 
-import br.ueg.nutshell.application.enums.StatusAtivoInativo;
-import br.ueg.nutshell.application.model.Grupo;
+import br.ueg.nutshell.application.model.Tag;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -18,19 +17,16 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.Set;
 
 /**
- * Classe de transferência referente a entidade {@link Grupo}.
+ * Classe de transferência referente a entidade {@link Tag}.
  *
- * @author UEG
+ * @author João Augusto Moreira Ananias
  */
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ApiModel(value = "Entidade de transferência de Grupo")
 public @Data class TagDTO implements Serializable {
-
-	private static final long serialVersionUID = -4907983765144204384L;
 
 	@ApiModelProperty(value = "Código da Tag")
 	private Long id;

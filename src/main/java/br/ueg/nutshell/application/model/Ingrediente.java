@@ -6,16 +6,13 @@ package br.ueg.nutshell.application.model;
 
 import br.ueg.nutshell.application.configuration.Constante;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
-import br.ueg.nutshell.application.enums.StatusSimNao;
 import br.ueg.nutshell.application.enums.converter.StatusAtivoInativoConverter;
-import br.ueg.nutshell.application.enums.converter.StatusSimNaoConverter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
