@@ -1,6 +1,6 @@
 /*
- * UsuarioController.java
- * Copyright (c) UEG.
+ * IngredienteController.java
+ * Copyright (c) João Augusto Moreira Ananias.
  *
  *
  *
@@ -9,16 +9,12 @@
 package br.ueg.nutshell.application.controller;
 
 import br.ueg.nutshell.api.util.Validation;
-import br.ueg.nutshell.application.dto.FiltroUsuarioDTO;
+import br.ueg.nutshell.application.dto.FiltroIngredienteDTO;
 import br.ueg.nutshell.application.dto.IngredienteDTO;
-import br.ueg.nutshell.application.dto.UsuarioDTO;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
 import br.ueg.nutshell.application.mapper.IngredienteMapper;
-import br.ueg.nutshell.application.mapper.UsuarioMapper;
 import br.ueg.nutshell.application.model.Ingrediente;
-import br.ueg.nutshell.application.model.Usuario;
 import br.ueg.nutshell.application.service.IngredienteService;
-import br.ueg.nutshell.application.service.UsuarioService;
 import br.ueg.nutshell.comum.exception.MessageResponse;
 import io.swagger.annotations.*;
 import net.sf.jasperreports.engine.JRException;
@@ -35,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe de controle referente a entidade {@link Usuario}.
+ * Classe de controle referente a entidade {@link Ingrediente}.
  * 
  * @author UEG
  */
@@ -51,7 +47,7 @@ public class IngredienteController extends AbstractController {
 	private IngredienteMapper ingredienteMapper;
 
 	/**
-	 * Salva uma instância de {@link Usuario} na base de dados.
+	 * Salva uma instância de {@link Ingrediente} na base de dados.
 	 * 
 	 * @param ingredienteDTO
 	 * @return
@@ -75,13 +71,13 @@ public class IngredienteController extends AbstractController {
 	 * Altera a instância de {@link Ingrediente} na base de dados.
 	 * 
 	 * @param id
-	 * @param usuarioDTO
+	 * @param ingredienteDTO
 	 * @return
 	 */
     @PreAuthorize("hasRole('ROLE_INGREDIENTE_ALTERAR')")
     @ApiOperation(value = "Altera os dados de um Ingrediente na base de dados.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+            @ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
             @ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class)
     })
     @PutMapping(path = "/{id:[\\d]+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -94,119 +90,118 @@ public class IngredienteController extends AbstractController {
     }
 
 	/**
-	 * Retorna a instância de {@link UsuarioDTO} conforme o 'id'
+	 * Retorna a instância de {@link IngredienteDTO} conforme o 'id'
 	 * informado.
 	 *
 	 * @param id
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_VISUALIZAR')")
-	@ApiOperation(value = "Recupera o usuario pela id.", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_VISUALIZAR')")
+	@ApiOperation(value = "Recupera o ingrediente pela id.", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({
-			@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+			@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class)
 	})
 	@GetMapping(path = "/{id:[\\d]+}", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<?> getUsuarioById(@ApiParam(value = "Id do Usuario") @PathVariable final BigDecimal id) {
+	public ResponseEntity<?> getIngredienteById(@ApiParam(value = "Id do Ingrediente") @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
-		Usuario usuario = ingredienteService.getByIdFetch(id.longValue());
-		UsuarioDTO usuarioTO = new UsuarioDTO();
+		Ingrediente ingrediente = ingredienteService.getByIdFetch(id.longValue());
+		IngredienteDTO ingredienteTO = new IngredienteDTO();
 
-		if(usuario != null)
-			usuarioTO = usuarioMapper.toDTO(usuario);
+		if(ingrediente != null)
+			ingredienteTO = ingredienteMapper.toDTO(ingrediente);
 
-		return ResponseEntity.ok(usuarioTO);
+		return ResponseEntity.ok(ingredienteTO);
 	}
 
 	/**
-	 * Retorna a lista de {@link UsuarioDTO} de acordo com os filtros
+	 * Retorna a lista de {@link IngredienteDTO} de acordo com os filtros
 	 * informados.
 	 * 
 	 * @param filtroDTO
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_PESQUISAR')")
-	@ApiOperation(value = "Recupera os usuarios pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_PESQUISAR')")
+	@ApiOperation(value = "Recupera os ingredientes pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
-			@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+			@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
 	})
 	@GetMapping(path = "/filtro-ativo", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<?> getUsuariosAtivosByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") FiltroUsuarioDTO filtroDTO) {
-		String idStatusUsuario = StatusAtivoInativo.ATIVO.getId();
-		filtroDTO.setIdStatus(idStatusUsuario);
-		List<UsuarioDTO> usuariosDTO = new ArrayList<>();
-		List<Usuario> usuarios = ingredienteService.getUsuariosByFiltro(filtroDTO);
-		if(usuarios != null){
-			for (Usuario usuario: usuarios) {
-				usuariosDTO.add(usuarioMapper.toDTO(usuario));
+	public ResponseEntity<?> getIngredientesAtivosByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") FiltroIngredienteDTO filtroDTO) {
+		String idStatusIngrediente = StatusAtivoInativo.ATIVO.getId();
+		filtroDTO.setStatus(idStatusIngrediente);
+		List<IngredienteDTO> ingredientesDTO = new ArrayList<>();
+		List<Ingrediente> ingredientes = ingredienteService.getIngredientesByFiltro(filtroDTO);
+		if(ingredientes != null){
+			for (Ingrediente ingrediente: ingredientes) {
+				ingredientesDTO.add(ingredienteMapper.toDTO(ingrediente));
 			}
 		}
 
-		return ResponseEntity.ok(usuariosDTO);
+		return ResponseEntity.ok(ingredientesDTO);
 	}
 
 	/**
-	 * Retorna a lista de {@link UsuarioDTO} de acordo com os filtros
+	 * Retorna a lista de {@link IngredienteDTO} de acordo com os filtros
 	 * informados.
 	 * 
 	 * @param filtroDTO
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_PESQUISAR')")
-	@ApiOperation(value = "Recupera os usuarios pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_PESQUISAR')")
+	@ApiOperation(value = "Recupera os ingredientes pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
-		@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+		@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 		@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 		@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
 	})
 	@GetMapping(path = "/filtro", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<?> getUsuariosByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") final FiltroUsuarioDTO filtroDTO) {
-		List<Usuario> usuarios = ingredienteService.getUsuariosByFiltro(filtroDTO);
-		List<UsuarioDTO> usuariosDTO = new ArrayList<>();
-		for (Usuario usuario: usuarios) {
-			usuario.setTelefones(null);
-			usuariosDTO.add (usuarioMapper.toDTO(usuario));
+	public ResponseEntity<?> getIngredientesByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") final FiltroIngredienteDTO filtroDTO) {
+		List<Ingrediente> ingredientes = ingredienteService.getIngredientesByFiltro(filtroDTO);
+		List<IngredienteDTO> ingredientesDTO = new ArrayList<>();
+		for (Ingrediente ingrediente: ingredientes) {
+			ingredientesDTO.add (ingredienteMapper.toDTO(ingrediente));
 		}
 
-		return ResponseEntity.ok(usuariosDTO);
+		return ResponseEntity.ok(ingredientesDTO);
 	}
 
 	/**
-	 * Inativa o {@link Usuario}.
+	 * Inativa o {@link Ingrediente}.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_ATIVAR_INATIVAR')")
-	@ApiOperation(value = "Inativa o usuario.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_ATIVAR_INATIVAR')")
+	@ApiOperation(value = "Inativa o ingrediente.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
-			@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+			@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class) 
 	})
 	@PutMapping(path = "/{id:[\\d]+}/inativo", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> inativar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id) {
+	public ResponseEntity<?> inativar(@ApiParam(value = "Código do Ingrediente", required = true) @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
 		ingredienteService.inativar(id.longValue());
 		return ResponseEntity.ok().build();
 	}
 
 	/**
-	 * Ativa o {@link Usuario}.
+	 * Ativa o {@link Ingrediente}.
 	 *
 	 * @param id
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_ATIVAR_INATIVAR')")
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_ATIVAR_INATIVAR')")
 	@ApiOperation(value = "Ativa o usuário.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({
-		@ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
+		@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
 		@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class)
 	})
 	@PutMapping(path = "/{id:[\\d]+}/ativo", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> ativar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id) {
+	public ResponseEntity<?> ativar(@ApiParam(value = "Código do Ingrediente", required = true) @PathVariable final BigDecimal id) {
 		Validation.max("id", id, 99999999L);
 		ingredienteService.ativar(id.longValue());
 		return ResponseEntity.ok().build();
@@ -242,8 +237,8 @@ public class IngredienteController extends AbstractController {
 		@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class) 
 	})
 	@GetMapping(path = "/{id:[\\d]+}/cpf/valido/{cpf}")
-	public ResponseEntity<?> validarCpfUsuario(
-			@ApiParam(value = "Código do Usuário") @PathVariable final BigDecimal id,
+	public ResponseEntity<?> validarCpfIngrediente(
+			@ApiParam(value = "Código do Ingrediente") @PathVariable final BigDecimal id,
 			@ApiParam(value = "CPF") @PathVariable final String cpf) {
 		Validation.max("id", id, 99999999L);
 		ingredienteService.validarCpf(cpf, id.longValue());
@@ -257,9 +252,9 @@ public class IngredienteController extends AbstractController {
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class)
 	})
-	@GetMapping(path = "/relatorio-usuarios/{idGrupo}",produces = { MediaType.APPLICATION_PDF_VALUE })
+	@GetMapping(path = "/relatorio-ingredientes/{idGrupo}",produces = { MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<?> getRelatorioGrupos (
-			@ApiParam(value = "Código do Usuário") @PathVariable final Long idGrupo
+			@ApiParam(value = "Código do Ingrediente") @PathVariable final Long idGrupo
 	) throws IOException, JRException {
 		return this.toPDF(ingredienteService.gerarRelatorio(idGrupo),"Relatorio-grupo.pdf");
 	}
@@ -271,7 +266,7 @@ public class IngredienteController extends AbstractController {
 			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class)
 	})
-	@GetMapping(path = "/relatorio-usuarios",produces = { MediaType.APPLICATION_PDF_VALUE })
+	@GetMapping(path = "/relatorio-ingredientes",produces = { MediaType.APPLICATION_PDF_VALUE })
 	public ResponseEntity<?> getRelatorioGrupos2 () throws IOException, JRException {
 		return this.toPDF(ingredienteService.gerarRelatorio(null),"Relatorio-grupo2.pdf");
 	}

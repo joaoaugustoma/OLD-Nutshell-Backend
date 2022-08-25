@@ -1,6 +1,6 @@
 /*
- * UsuarioRepository.java
- * Copyright (c) UEG.
+ * IngredienteRepository.java
+ * Copyright (c) João Augusto Moreira Ananias.
  *
  *
  *
@@ -8,7 +8,7 @@
  */
 package br.ueg.nutshell.application.repository;
 
-import br.ueg.nutshell.application.model.Usuario;
+import br.ueg.nutshell.application.model.Ingrediente;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,54 +17,54 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 /**
- * Classe de persistência referente a entidade {@link Usuario}.
+ * Classe de persistência referente a entidade {@link Ingrediente}.
  *
  * @author UEG
  */
 @Repository
-public interface IngredienteRepository extends UsuarioRepositoryCustom, JpaRepository<Usuario, Long> {
+public interface IngredienteRepository extends JpaRepository<Ingrediente, Long> {
 	// TODO Garantir que somente usuários com ID_ORIGEM_CADASTRO = PORTALSSO
 
 	/**
-	 * Retorna a instância do {@link Usuario} conforme o 'login' informado.
+	 * Retorna a instância do {@link Ingrediente} conforme o 'login' informado.
 	 * 
 	 * @param login
 	 * @return
 	 */
-	public Usuario findByLogin(final String login);
+	public Ingrediente findByLogin(final String login);
 
 	/**
-	 * Retorna a instância do {@link Usuario} conforme o 'cpf' informado.
+	 * Retorna a instância do {@link Ingrediente} conforme o 'cpf' informado.
 	 * 
 	 * @param cpf
 	 * @return
 	 */
-	public Usuario findByCpf(final String cpf);
+	public Ingrediente findByCpf(final String cpf);
 
 	/**
-	 * Retorna a instância do {@link Usuario} conforme o 'cpf' informado
+	 * Retorna a instância do {@link Ingrediente} conforme o 'cpf' informado
 	 * e que não tenha o 'id' informado.
 	 * 
 	 * @param cpf
 	 * @param id
 	 * @return
 	 */
-	@Query(" SELECT usuario FROM Usuario usuario "
+	@Query(" SELECT usuario FROM Ingrediente usuario "
 			+ " WHERE usuario.cpf = :cpf "
 			+ " AND (:id IS NULL OR usuario.id != :id)")
-	public Usuario findByCpfAndNotId(@Param("cpf") final String cpf, @Param("id") final Long id);
+	public Ingrediente findByCpfAndNotId(@Param("cpf") final String cpf, @Param("id") final Long id);
 
 	/**
-	 * Retorna uma instância de {@link Usuario} conforme o 'id' informado.
+	 * Retorna uma instância de {@link Ingrediente} conforme o 'id' informado.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	@Query(" SELECT usuario FROM Usuario usuario LEFT JOIN FETCH usuario.grupos usuarioGrupo "
+	@Query(" SELECT usuario FROM Ingrediente usuario LEFT JOIN FETCH usuario.grupos usuarioGrupo "
 			+ " LEFT JOIN FETCH usuarioGrupo.grupo grupo "
 			+ " LEFT JOIN FETCH usuario.telefones telefone "
 			+ " WHERE usuario.id = :id ")
-	public Optional<Usuario> findByIdFetch(@Param("id") final Long id);
+	public Optional<Ingrediente> findByIdFetch(@Param("id") final Long id);
 
 
 	/**
