@@ -56,7 +56,7 @@ public class IngredienteController extends AbstractController {
 	 * @param ingredienteDTO
 	 * @return
 	 */
-	@PreAuthorize("hasRole('ROLE_USUARIO_INCLUIR')")
+	@PreAuthorize("hasRole('ROLE_INGREDIENTE_INCLUIR')")
 	@ApiOperation(value = "Inclui um novo Ingrediente na base de dados.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
 			@ApiResponse(code = 200, message = "Success", response = IngredienteDTO.class),
@@ -64,35 +64,33 @@ public class IngredienteController extends AbstractController {
 			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
 	})
 	@PostMapping(path = "/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> incluir(@ApiParam(value = "Informações do Usuário", required = true) @Valid @RequestBody IngredienteDTO ingredienteDTO) {
+	public ResponseEntity<?> incluir(@ApiParam(value = "Dados do Ingrediente", required = true) @Valid @RequestBody IngredienteDTO ingredienteDTO) {
 		Ingrediente ingrediente = ingredienteMapper.toEntity(ingredienteDTO);
-		ingredienteService.configurarUsuarioGruposAndTelefones(ingrediente);
 		ingrediente = ingredienteService.salvar(ingrediente);
 		ingredienteDTO = ingredienteMapper.toDTO(ingrediente);
 		return ResponseEntity.ok(ingredienteDTO);
 	}
 
     /**
-	 * Altera a instância de {@link Usuario} na base de dados.
+	 * Altera a instância de {@link Ingrediente} na base de dados.
 	 * 
 	 * @param id
 	 * @param usuarioDTO
 	 * @return
 	 */
-    @PreAuthorize("hasRole('ROLE_USUARIO_ALTERAR')")
-    @ApiOperation(value = "Altera as informações de um Usuário na base de dados.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ROLE_INGREDIENTE_ALTERAR')")
+    @ApiOperation(value = "Altera os dados de um Ingrediente na base de dados.", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiResponses({
             @ApiResponse(code = 200, message = "Success", response = UsuarioDTO.class),
             @ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class)
     })
     @PutMapping(path = "/{id:[\\d]+}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> alterar(@ApiParam(value = "Código do Usuário", required = true) @PathVariable final BigDecimal id, @ApiParam(value = "Informações do Usuário", required = true) @Valid @RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<?> alterar(@ApiParam(value = "Código do Ingrediente", required = true) @PathVariable final BigDecimal id, @ApiParam(value = "Dados do Ingrediente", required = true) @Valid @RequestBody IngredienteDTO ingredienteDTO) {
         Validation.max("id", id, 99999999L);
-        Usuario usuario = usuarioMapper.toEntity(usuarioDTO);
-        ingredienteService.configurarUsuarioGruposAndTelefones(usuario);
-        usuario.setId(id.longValue());
-        ingredienteService.salvar(usuario);
-		return ResponseEntity.ok(usuarioDTO);
+        Ingrediente ingrediente = ingredienteMapper.toEntity(ingredienteDTO);
+        ingrediente.setId(id.longValue());
+        ingredienteService.salvar(ingrediente);
+		return ResponseEntity.ok(ingredienteDTO);
     }
 
 	/**

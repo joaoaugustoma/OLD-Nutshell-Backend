@@ -17,7 +17,7 @@ import org.mapstruct.Mapper;
  *
  * @author João Augusto Moreira Ananias
  */
-@Mapper(componentModel = "spring", uses = { StatusAtivoInativoMapper.class, SimNaoMapper.class, IngredienteMapper.class })
+@Mapper(componentModel = "spring", uses = { StatusAtivoInativoMapper.class, IngredienteMapper.class })
 public interface IngredienteMapper {
 	/**
 	 * Converte a entidade {@link Ingrediente} em DTO {@link IngredienteDTO}
@@ -26,7 +26,7 @@ public interface IngredienteMapper {
 	 * @return
 	 */
 
-	public IngredienteDTO toDTO(Ingrediente ingrediente);
+	IngredienteDTO toDTO(Ingrediente ingrediente);
 
 	/**
 	 * Converte o DTO {@link IngredienteDTO} para entidade {@link Ingrediente}

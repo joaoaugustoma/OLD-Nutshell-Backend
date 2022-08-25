@@ -1,5 +1,5 @@
 /*
- * UsuarioService.java
+ * IngredienteService.java
  * Copyright (c) UEG.
  *
  *
@@ -10,17 +10,17 @@ package br.ueg.nutshell.application.service;
 
 import br.ueg.nutshell.application.configuration.Constante;
 import br.ueg.nutshell.application.dto.AuthDTO;
-import br.ueg.nutshell.application.dto.FiltroUsuarioDTO;
-import br.ueg.nutshell.application.dto.UsuarioDTO;
-import br.ueg.nutshell.application.dto.UsuarioSenhaDTO;
+import br.ueg.nutshell.application.dto.FiltroIngredienteDTO;
+import br.ueg.nutshell.application.dto.IngredienteDTO;
+import br.ueg.nutshell.application.dto.IngredienteSenhaDTO;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
 import br.ueg.nutshell.application.exception.SistemaMessageCode;
 import br.ueg.nutshell.application.model.Ingrediente;
-import br.ueg.nutshell.application.model.TelefoneUsuario;
-import br.ueg.nutshell.application.model.Usuario;
-import br.ueg.nutshell.application.model.UsuarioGrupo;
+import br.ueg.nutshell.application.model.TelefoneIngrediente;
+import br.ueg.nutshell.application.model.Ingrediente;
+import br.ueg.nutshell.application.model.IngredienteGrupo;
 import br.ueg.nutshell.application.repository.IngredienteRepository;
-import br.ueg.nutshell.application.repository.UsuarioRepository;
+import br.ueg.nutshell.application.repository.IngredienteRepository;
 import br.ueg.nutshell.comum.exception.BusinessException;
 import br.ueg.nutshell.comum.util.CollectionUtil;
 import br.ueg.nutshell.comum.util.Util;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Classe de négocio referente a entidade {@link Usuario}.
+ * Classe de négocio referente a entidade {@link Ingrediente}.
  *
  * @author UEG
  */
@@ -64,14 +64,14 @@ public class IngredienteService {
 	private DataSource dataSource;
 
 	/**
-     * Persiste os dados do {@link Usuario}.
+     * Persiste os dados do {@link Ingrediente}.
      *
      * @param usuario
      * @return
      */
-	public Usuario salvar(Usuario usuario) {
+	public Ingrediente salvar(Ingrediente usuario) {
 		validarCamposObrigatorios(usuario);
-		validarUsuarioDuplicadoPorCpf(usuario);
+		validarIngredienteDuplicadoPorCpf(usuario);
 
 		if (usuario.getId() == null) {
 
@@ -83,7 +83,7 @@ public class IngredienteService {
 			//usuario.setNome(user.getFirstName().concat(user.getLastName()));
 
 		} else {
-			Usuario vigente = getById(usuario.getId());
+			Ingrediente vigente = getById(usuario.getId());
 
 			usuario.setStatus(vigente.getStatus());
 			usuario.setSenha(vigente.getSenha());
@@ -96,26 +96,26 @@ public class IngredienteService {
 	}
 
 	/**
-	 * Configura o {@link Usuario} dentro de {@link UsuarioGrupo} e {@link TelefoneUsuario} para salvar.
+	 * Configura o {@link Ingrediente} dentro de {@link IngredienteGrupo} e {@link TelefoneIngrediente} para salvar.
 	 * 
 	 * @param usuario
 	 */
-	public void configurarUsuarioGruposAndTelefones(Usuario usuario) {
-		for (UsuarioGrupo usuarioGrupo : usuario.getGrupos()) {
-			usuarioGrupo.setUsuario(usuario);
+	public void configurarIngredienteGruposAndTelefones(Ingrediente usuario) {
+		for (IngredienteGrupo usuarioGrupo : usuario.getGrupos()) {
+			usuarioGrupo.setIngrediente(usuario);
 		}
 
-		for (TelefoneUsuario telefoneUsuario : usuario.getTelefones()) {
-			telefoneUsuario.setUsuario(usuario);
+		for (TelefoneIngrediente telefoneIngrediente : usuario.getTelefones()) {
+			telefoneIngrediente.setIngrediente(usuario);
 		}
 	}
 
     /**
-     * Verifica a existencia de {@link Usuario} acordo com o 'cpf' informado.
+     * Verifica a existencia de {@link Ingrediente} acordo com o 'cpf' informado.
      *
      * @param usuario
      */
-	private void validarUsuarioDuplicadoPorCpf(final Usuario usuario) {
+	private void validarIngredienteDuplicadoPorCpf(final Ingrediente usuario) {
 		Long count = usuarioRepository.countByCpf(usuario.getCpf());
 
 		if ( (count > BigDecimal.ONE.longValue() && usuario.getId()!=null) ||
@@ -127,11 +127,11 @@ public class IngredienteService {
 
 
     /**
-     * Verifica se os campos obrigatorios de {@link Usuario} foram preenchidos.
+     * Verifica se os campos obrigatorios de {@link Ingrediente} foram preenchidos.
      *
      * @param usuario
      */
-	private void validarCamposObrigatorios(final Usuario usuario) {
+	private void validarCamposObrigatorios(final Ingrediente usuario) {
 		boolean invalido = Boolean.FALSE;
 
 		if (Util.isEmpty(usuario.getLogin())) {
@@ -147,25 +147,25 @@ public class IngredienteService {
 	}
 
     /**
-     * Retorna a instância do {@link Usuario} conforme o 'login' informado.
+     * Retorna a instância do {@link Ingrediente} conforme o 'login' informado.
      * 
      * @param login
      * @return
      */
-	public Usuario getByLogin(String login) {
+	public Ingrediente getByLogin(String login) {
 		return usuarioRepository.findByLogin(login);
 	}
 
     /**
-     * Retorna a Lista de {@link UsuarioDTO} conforme o filtro pesquisado.
+     * Retorna a Lista de {@link IngredienteDTO} conforme o filtro pesquisado.
      * 
      * @param filtroDTO
      * @return
      */
-	public List<Usuario> getUsuariosByFiltro(FiltroUsuarioDTO filtroDTO) {
+	public List<Ingrediente> getIngredientesByFiltro(FiltroIngredienteDTO filtroDTO) {
 		validarCamposObrigatoriosFiltro(filtroDTO);
 
-		List<Usuario> usuarios = usuarioRepository.findAllByFiltro(filtroDTO);
+		List<Ingrediente> usuarios = usuarioRepository.findAllByFiltro(filtroDTO);
 
 		if (CollectionUtil.isEmpty(usuarios)) {
 			throw new BusinessException(SistemaMessageCode.ERRO_NENHUM_REGISTRO_ENCONTRADO_FILTROS);
@@ -180,7 +180,7 @@ public class IngredienteService {
      *
      * @param filtroDTO
      */
-	private void validarCamposObrigatoriosFiltro(final FiltroUsuarioDTO filtroDTO) {
+	private void validarCamposObrigatoriosFiltro(final FiltroIngredienteDTO filtroDTO) {
 		boolean vazio = Boolean.TRUE;
 
 		if (!Util.isEmpty(filtroDTO.getNome())) {
@@ -209,28 +209,28 @@ public class IngredienteService {
      *
      * @param usuario -
      */
-	public void salvarUltimoAcesso(Usuario usuario) {
+	public void salvarUltimoAcesso(Ingrediente usuario) {
 		usuario.setUltimoAcesso(LocalDate.now());
 		usuarioRepository.save(usuario);
 	}
 
     /**
-     * Retorna a instância de {@link Usuario} conforme o 'id' informado.
+     * Retorna a instância de {@link Ingrediente} conforme o 'id' informado.
      *
      * @param id -
      * @return -
      */
-	public Usuario getById(final Long id) {
+	public Ingrediente getById(final Long id) {
 		return usuarioRepository.findById(id).orElse(null);
 	}
 
 	/**
-	 * Retorna a instância de {@link Usuario} conforme o 'id' informado.
+	 * Retorna a instância de {@link Ingrediente} conforme o 'id' informado.
 	 * 
 	 * @param id
 	 * @return
 	 */
-	public Usuario getByIdFetch(final Long id) {
+	public Ingrediente getByIdFetch(final Long id) {
 		return usuarioRepository.findByIdFetch(id).orElse(null);
 	}
 
@@ -239,7 +239,7 @@ public class IngredienteService {
      *
      * @param redefinirSenhaDTO -
      */
-	private void validarConformidadeSenha(final UsuarioSenhaDTO redefinirSenhaDTO) {
+	private void validarConformidadeSenha(final IngredienteSenhaDTO redefinirSenhaDTO) {
 		if (Util.isEmpty(redefinirSenhaDTO.getNovaSenha()) || Util.isEmpty(redefinirSenhaDTO.getConfirmarSenha())) {
 			throw new BusinessException(SistemaMessageCode.ERRO_CAMPOS_OBRIGATORIOS);
 		}
@@ -256,7 +256,7 @@ public class IngredienteService {
      * @param usuario -
      * @param senhaAntiga -
      */
-	private void validarSenhaCorrente(Usuario usuario, String senhaAntiga) {
+	private void validarSenhaCorrente(Ingrediente usuario, String senhaAntiga) {
 		if (Util.isEmpty(senhaAntiga)) {
 			throw new BusinessException(SistemaMessageCode.ERRO_CAMPOS_OBRIGATORIOS);
 		}
@@ -270,12 +270,12 @@ public class IngredienteService {
 	}
 
     /**
-     * Realiza a inclusão ou alteração de senha do {@link Usuario}.
+     * Realiza a inclusão ou alteração de senha do {@link Ingrediente}.
      *
      * @param usuarioSenhaDTO -
      */
-	public Usuario redefinirSenha(final UsuarioSenhaDTO usuarioSenhaDTO) {
-		Usuario usuario = getById(usuarioSenhaDTO.getIdUsuario());
+	public Ingrediente redefinirSenha(final IngredienteSenhaDTO usuarioSenhaDTO) {
+		Ingrediente usuario = getById(usuarioSenhaDTO.getIdIngrediente());
 
 		validarConformidadeSenha(usuarioSenhaDTO);
 
@@ -289,35 +289,35 @@ public class IngredienteService {
 	}
 
 	/**
-	 * Retorna a instância de {@link Usuario} conforme o 'cpf' informado.
+	 * Retorna a instância de {@link Ingrediente} conforme o 'cpf' informado.
 	 * 
 	 * @param cpf
 	 * @return
 	 */
-	public Usuario findByCpfUsuario(final String cpf) {
+	public Ingrediente findByCpfIngrediente(final String cpf) {
 		return usuarioRepository.findByCpf(cpf);
 	}
 
 	/**
-	 * Retorna a instância do {@link Usuario} conforme o 'cpf' informado
+	 * Retorna a instância do {@link Ingrediente} conforme o 'cpf' informado
 	 * e que não tenha o 'id' informado.
 	 * 
 	 * @param cpf
 	 * @param id
 	 * @return
 	 */
-	public Usuario findByCpfUsuarioAndNotId(final String cpf, final Long id) {
+	public Ingrediente findByCpfIngredienteAndNotId(final String cpf, final Long id) {
 		return usuarioRepository.findByCpfAndNotId(cpf, id);
 	}
 
     /**
-     * Solicita a recuperação de senha do {@link Usuario}.
+     * Solicita a recuperação de senha do {@link Ingrediente}.
      *
      * @param cpf -
      * @return -
      */
-	public Usuario recuperarSenha(final String cpf) {
-		Usuario usuario = findByCpfUsuario(cpf);
+	public Ingrediente recuperarSenha(final String cpf) {
+		Ingrediente usuario = findByCpfIngrediente(cpf);
 
 		if (usuario == null) {
 			throw new BusinessException(SistemaMessageCode.ERRO_USUARIO_NAO_ENCONTRADO);
@@ -328,25 +328,25 @@ public class IngredienteService {
 	}
 
     /**
-     * Inativa o {@link Usuario}.
+     * Inativa o {@link Ingrediente}.
      *
      * @param id
      * @return
      */
-	public Usuario inativar(final Long id) {
-		Usuario usuario = getById(id);
+	public Ingrediente inativar(final Long id) {
+		Ingrediente usuario = getById(id);
 		usuario.setStatus(StatusAtivoInativo.INATIVO);
 		return usuarioRepository.save(usuario);
 	}
 
     /**
-     * Ativa o {@link Usuario}.
+     * Ativa o {@link Ingrediente}.
      *
      * @param id
      * @return
      */
-	public Usuario ativar(final Long id) {
-		Usuario usuario = getById(id);
+	public Ingrediente ativar(final Long id) {
+		Ingrediente usuario = getById(id);
 		usuario.setStatus(StatusAtivoInativo.ATIVO);
 		return usuarioRepository.save(usuario);
 	}
@@ -386,12 +386,12 @@ public class IngredienteService {
 			throw new BusinessException(SistemaMessageCode.ERRO_CPF_INVALIDO);
 		}
 
-		Usuario usuario;
+		Ingrediente usuario;
 
 		if (id == null) {
-			usuario = findByCpfUsuario(cpf);
+			usuario = findByCpfIngrediente(cpf);
 		} else {
-			usuario = findByCpfUsuarioAndNotId(cpf, id);
+			usuario = findByCpfIngredienteAndNotId(cpf, id);
 		}
 
 		if (usuario != null) {
