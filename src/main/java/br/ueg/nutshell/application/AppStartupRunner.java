@@ -79,7 +79,9 @@ public class AppStartupRunner implements ApplicationRunner {
 
         Modulo moduloAmigo = createModuloAmigo();
 
-        Grupo grupo = createGrupoAdmin(Arrays.asList(moduloUsuario, moduloGrupo,moduloTipoAmigo, moduloAmigo));
+        Modulo moduloIngrediente = createModuloIngrediente();
+
+        Grupo grupo = createGrupoAdmin(Arrays.asList(moduloUsuario, moduloGrupo,moduloTipoAmigo, moduloAmigo, moduloIngrediente));
 
         createUsuarioAdmin(grupo);
 
@@ -204,6 +206,57 @@ public class AppStartupRunner implements ApplicationRunner {
         moduloAmigo = moduloRepository.save(moduloAmigo);
 
         return moduloAmigo;
+    }
+
+    private Modulo createModuloIngrediente() {
+        Modulo moduloIngrediente = new Modulo();
+
+        moduloIngrediente.setMnemonico("INGREDIENTE");
+        moduloIngrediente.setNome("Manter Ingrediente ");
+        moduloIngrediente.setStatus(StatusAtivoInativo.ATIVO);
+        moduloIngrediente = moduloRepository.save(moduloIngrediente);
+
+        Set<Funcionalidade> funcionalidades = new HashSet<>();
+
+        Funcionalidade fCriar = new Funcionalidade();
+        fCriar.setMnemonico("CRIAR");
+        fCriar.setNome("Criar");
+        fCriar.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fCriar);
+
+        Funcionalidade fListar = new Funcionalidade();
+        fListar.setMnemonico("LISTAR");
+        fListar.setNome("Listar");
+        fListar.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fListar);
+
+        Funcionalidade fExcluir = new Funcionalidade();
+        fExcluir.setMnemonico("EXCLUIR");
+        fExcluir.setNome("Excluir");
+        fExcluir.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fExcluir);
+
+        Funcionalidade fAlterar = new Funcionalidade();
+        fAlterar.setMnemonico("ALTERAR");
+        fAlterar.setNome("Alterar");
+        fAlterar.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fAlterar);
+
+        Funcionalidade fStatus = new Funcionalidade();
+        fStatus.setMnemonico("STATUS");
+        fStatus.setNome("Status");
+        fStatus.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fStatus);
+
+
+        for(Funcionalidade funcionalidade: funcionalidades){
+            funcionalidade.setModulo(moduloIngrediente);
+        }
+
+        moduloIngrediente.setFuncionalidades(funcionalidades);
+        moduloIngrediente = moduloRepository.save(moduloIngrediente);
+
+        return moduloIngrediente;
     }
 
     private void createUsuarioAdmin(Grupo grupo) {
