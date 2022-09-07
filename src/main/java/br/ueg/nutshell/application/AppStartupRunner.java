@@ -103,10 +103,10 @@ public class AppStartupRunner implements ApplicationRunner {
 
         fornecedor.setDataCadastrado(LocalDate.now());
         fornecedor.setDataAtualizado(LocalDate.now());
-        fornecedor.setRazaoSocial( "TESTE AAAAA");
-        fornecedor.setNomeFantasia("PQP EU NÃO AGUENTO MAIS");
-        fornecedor.setCpfCnpj("12312312312");
-        fornecedor.setTipoPessoa(TipoPessoa.PESSOA_FISICA);
+        fornecedor.setRazaoSocial( "Fornecedor 1");
+        fornecedor.setNomeFantasia("Bolos e Doces");
+        fornecedor.setCpfCnpj("12312312312312");
+        fornecedor.setTipoPessoa(TipoPessoa.PESSOA_JURIDICA);
         fornecedor.setSituacao(StatusAtivoInativo.ATIVO);
 
         fornecedorRepository.save(fornecedor);
@@ -255,11 +255,11 @@ public class AppStartupRunner implements ApplicationRunner {
         usuario.setDataCadastrado(LocalDate.now());
         usuario.setDataAtualizado(LocalDate.now());
         usuario.setTelefones(new HashSet<>());
-        usuario.setCpf("10010010017");
-        usuario.setLogin("admin");
-        usuario.setNome("Administrador");
-        usuario.setEmail("admin@teste.com.br");
-        usuario.setSenha(new BCryptPasswordEncoder().encode("admin"));
+        usuario.setCpf("70240686128");
+        usuario.setLogin("joao.ananias");
+        usuario.setNome("João Augusto Moreira Ananias");
+        usuario.setEmail("joao.ananias@teste.com.br");
+        usuario.setSenha(new BCryptPasswordEncoder().encode("123456"));
 
         usuario = usuarioRepository.save(usuario);
 
