@@ -46,7 +46,7 @@ public class FornecedorRepositoryImpl implements FornecedorRepositoryCustom {
 		
 		if (!Util.isEmpty(filtroDTO.getRazaoSocial())) {
 			jpql.append(" AND fornecedor.razaoSocial = :razaoSocial ");
-			parametros.put("login", filtroDTO.getRazaoSocial());
+			parametros.put("razaoSocial", filtroDTO.getRazaoSocial());
 		}
 		if (!Util.isEmpty(filtroDTO.getCpfCnpj())) {
 			jpql.append(" AND fornecedor.cpfCnpj = :cpfCnpj ");

@@ -144,35 +144,6 @@ public class FornecedorController extends AbstractController {
 	@PreAuthorize("hasRole('ROLE_FORNECEDOR_PESQUISAR')")
 	@ApiOperation(value = "Recupera os fornecedores pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses({ 
-			@ApiResponse(code = 200, message = "Success", response = FornecedorDTO.class),
-			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
-			@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
-	})
-	@GetMapping(path = "/filtro-ativo", produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<?> getFornecedorsAtivosByFiltro(@ApiParam(value = "Filtro de pesquisa", required = true) @Valid @ModelAttribute("filtroDTO") FiltroFornecedorDTO filtroDTO) {
-		String idStatusFornecedor = StatusAtivoInativo.ATIVO.getId();
-		filtroDTO.setSituacao(idStatusFornecedor);
-		List<FornecedorDTO> fornecedoresDTO = new ArrayList<>();
-		List<Fornecedor> fornecedores = fornecedorService.getFornecedoresByFiltro(filtroDTO);
-		if(fornecedores != null){
-			for (Fornecedor fornecedor: fornecedores) {
-				fornecedoresDTO.add(fornecedorMapper.toDTO(fornecedor));
-			}
-		}
-
-		return ResponseEntity.ok(fornecedoresDTO);
-	}
-
-	/**
-	 * Retorna a lista de {@link FornecedorDTO} de acordo com os filtros
-	 * informados.
-	 * 
-	 * @param filtroDTO
-	 * @return
-	 */
-	@PreAuthorize("hasRole('ROLE_FORNECEDOR_PESQUISAR')")
-	@ApiOperation(value = "Recupera os fornecedores pelo Filtro Informado.", produces = MediaType.APPLICATION_JSON_VALUE)
-	@ApiResponses({ 
 		@ApiResponse(code = 200, message = "Success", response = FornecedorDTO.class),
 		@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class),
 		@ApiResponse(code = 404, message = "Not Found", response = MessageResponse.class) 
@@ -226,20 +197,21 @@ public class FornecedorController extends AbstractController {
 		return ResponseEntity.ok().build();
 	}
 
+
 	/**
 	 * Verifica se o CPF informado é válido e se está em uso.
-	 * 
-	 * @param cpfCnpj
+	 *
+	 * @param cpf
 	 * @return
 	 */
-	@ApiOperation(value = "Verifica se o CPF informado é válido e se está em uso.")
-	@ApiResponses({ 
-		@ApiResponse(code = 200, message = "Success"),
-		@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class) 
+	@ApiOperation(value = "Verifica se o CPF/CNPJ informado é válido e se está em uso.")
+	@ApiResponses({
+			@ApiResponse(code = 200, message = "Success"),
+			@ApiResponse(code = 400, message = "Bad Request", response = MessageResponse.class)
 	})
 	@GetMapping(path = "cpfCnpj/valido/{cpfCnpj}")
-	public ResponseEntity<?> validarCpf(@ApiParam(value = "cpfCnpj") @PathVariable final String cpfCnpj, @ApiParam(value = "idFornecedor") @PathVariable final Long idFornecedor) {
-		fornecedorService.validarCpf(cpfCnpj, idFornecedor);
+	public ResponseEntity<?> validarCpfCnpj(@ApiParam(value = "cpfCnpj") @PathVariable final String cpfCnpj) {
+		fornecedorService.validarCpfCnpj(cpfCnpj);
 		return ResponseEntity.ok().build();
 	}
 

@@ -65,6 +65,9 @@ public class FornecedorService {
 	public Fornecedor salvar(Fornecedor fornecedor) {
 		validarCamposObrigatorios(fornecedor);
 		validarFornecedorDuplicadoPorCpfCnpj(fornecedor);
+		if(!isCpfCnpjValido(fornecedor.getCpfCnpj())){
+			throw new BusinessException(SistemaMessageCode.ERRO_CPF_CNPJ_INVALIDO);
+		};
 
 		if (fornecedor.getId() == null) {
 
@@ -234,7 +237,7 @@ public class FornecedorService {
 		boolean valido = false;
 
 		if (!Util.isEmpty(cpfCnpj)) {
-			valido = Util.isCpfValido(cpfCnpj);
+			valido = Util.isCpfCnpjValido(cpfCnpj);
 		}
 		return valido;
 	}
@@ -262,12 +265,21 @@ public class FornecedorService {
 	}
 
 	/**
+			* Verifica se o CPF informado é válido e se está em uso.
+			*
+			* @param cpfCnpj
+	 */
+	public void validarCpfCnpj(final String cpfCnpj) {
+		validarCpfCnpj(cpfCnpj, null);
+	}
+
+	/**
 	 * Verifica se o CPF informado é válido e se está em uso.
 	 *
 	 * @param cpfCnpj
 	 * @param id
 	 */
-	public void validarCpf(final String cpfCnpj, final Long id) {
+	public void validarCpfCnpj(final String cpfCnpj, final Long id) {
 		if (!isCpfCnpjValido(cpfCnpj)) {
 			throw new BusinessException(SistemaMessageCode.ERRO_CPF_INVALIDO);
 		}
@@ -284,6 +296,7 @@ public class FornecedorService {
 			throw new BusinessException(SistemaMessageCode.ERRO_CPF_EM_USO);
 		}
 	}
+
 	public JasperPrint gerarRelatorio(Long idFornecedor){
 		try {
 			Connection connection = dataSource.getConnection();

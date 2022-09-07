@@ -69,6 +69,8 @@ public enum SistemaMessageCode implements MessageCode {
 	ERRO_AMIGO_DUPLICADO("MSG-046", 400),
 
 	ERRO_FORNECEDOR_DUPLICADO("MSG-047", 400),
+
+	ERRO_CPF_CNPJ_INVALIDO("MSG-048", 400),
             ;
 
 	private final String code;

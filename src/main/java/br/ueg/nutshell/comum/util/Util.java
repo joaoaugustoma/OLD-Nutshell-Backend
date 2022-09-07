@@ -77,6 +77,27 @@ public final class Util {
 	}
 
 	/**
+	 * Verifica se o CNPJ informado é válido.
+	 *
+	 * @param cnpj
+	 * @return
+	 */
+	public static boolean isCnpjValido(final String cnpj) {
+		boolean valido = Boolean.TRUE;
+
+		try {
+			new CNPJValidator(Boolean.FALSE).assertValid(cnpj);
+
+			if (CNPJ_ZERO.equals(cnpj)) {
+				valido = Boolean.FALSE;
+			}
+		} catch (InvalidStateException e) {
+			valido = Boolean.FALSE;
+		}
+		return valido;
+	}
+
+	/**
 	 * Verifica se o e-mail informado é válido.
 	 * 
 	 * @param mail
@@ -94,24 +115,19 @@ public final class Util {
 	}
 
 	/**
-	 * Verifica se o CNPJ informado é válido.
+	 * Verifica se o CPF/CNPJ informado é válido.
 	 * 
-	 * @param cnpj
+	 * @param cpfCnpj
 	 * @return
 	 */
-	public static boolean isCnpjValido(final String cnpj) {
-		boolean valido = Boolean.TRUE;
-
-		try {
-			new CNPJValidator(Boolean.FALSE).assertValid(cnpj);
-
-			if (CNPJ_ZERO.equals(cnpj)) {
-				valido = Boolean.FALSE;
-			}
-		} catch (InvalidStateException e) {
-			valido = Boolean.FALSE;
+	public static boolean isCpfCnpjValido(final String cpfCnpj) {
+		if (cpfCnpj.length() == 11) {
+			return isCpfValido(cpfCnpj);
+		} else if (cpfCnpj.length() == 14) {
+			return isCnpjValido(cpfCnpj);
+		}else{
+			return Boolean.FALSE;
 		}
-		return valido;
 	}
 
 	/**
