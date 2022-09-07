@@ -41,27 +41,25 @@ public class FornecedorRepositoryImpl implements FornecedorRepositoryCustom {
 	public List<Fornecedor> findAllByFiltro(FiltroFornecedorDTO filtroDTO) {
 		Map<String, Object> parametros = new HashMap<>();
 		StringBuilder jpql = new StringBuilder();
-		jpql.append(" SELECT DISTINCT fornecedor FROM Fornecedor fornecedor " +
-				"LEFT JOIN FETCH fornecedor.tipoPessoa tipoPessoa ");
+		jpql.append(" SELECT DISTINCT fornecedor FROM Fornecedor fornecedor");
 		jpql.append(" WHERE 1=1 ");
 		
 		if (!Util.isEmpty(filtroDTO.getRazaoSocial())) {
 			jpql.append(" AND fornecedor.razaoSocial = :razaoSocial ");
-			parametros.put("login", filtroDTO.getCpfCnpj());
+			parametros.put("login", filtroDTO.getRazaoSocial());
 		}
 		if (!Util.isEmpty(filtroDTO.getCpfCnpj())) {
 			jpql.append(" AND fornecedor.cpfCnpj = :cpfCnpj ");
 			parametros.put("cpfCnpj", filtroDTO.getCpfCnpj());
 		}
-		if (!Util.isEmpty(filtroDTO.getNomeTipoPessoa())) {
+		if (filtroDTO.getPessoaEnum() != null) {
 			jpql.append(" AND fornecedor.tipoPessoa = :tipoPessoa ");
-			parametros.put("tipoPessoa", filtroDTO.getCpfCnpj());
+			parametros.put("tipoPessoa", filtroDTO.getPessoaEnum());
 		}
 		if (filtroDTO.getStatusEnum() != null) {
-			jpql.append(" AND fornecedor.situacao = :statusEnum ");
-			parametros.put("statusEnum", filtroDTO.getCpfCnpj());
+			jpql.append(" AND fornecedor.situacao = :situacao ");
+			parametros.put("situacao", filtroDTO.getStatusEnum());
 		}
-
 
 		jpql.append(" ORDER BY fornecedor.razaoSocial ASC ");
 
