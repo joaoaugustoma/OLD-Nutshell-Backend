@@ -120,6 +120,7 @@ public final class Util {
 	 * @param cpfCnpj
 	 * @return
 	 */
+	//TODO Validação se inclusão feita para pessoa física cpfCnpj obrigatoriamente tem que ser padrão cpf e se for jurídica cnpj
 	public static boolean isCpfCnpjValido(final String cpfCnpj) {
 		if (cpfCnpj.length() == 11) {
 			return isCpfValido(cpfCnpj);
