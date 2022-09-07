@@ -1,6 +1,7 @@
 package br.ueg.nutshell.application.dto;
 
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
+import br.ueg.nutshell.application.enums.TipoPessoa;
 import br.ueg.nutshell.comum.util.Util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -20,10 +21,10 @@ public @Data class FiltroFornecedorDTO implements Serializable {
     private String razaoSocial;
 
     @ApiModelProperty(value = "nome do Tipo de Pessoa do Fornecedor")
-    private String nomeTipoPessoa;
+    private String tipoPessoa;
 
     @ApiModelProperty(value = "Indica se o Fornecedor está ativo ou não")
-    private String idStatus;
+    private String situacao;
 
     /**
      * @return the id
@@ -32,9 +33,22 @@ public @Data class FiltroFornecedorDTO implements Serializable {
     public StatusAtivoInativo getStatusEnum() {
         StatusAtivoInativo status = null;
 
-        if (!Util.isEmpty(this.idStatus)) {
-            status = StatusAtivoInativo.getById(this.idStatus);
+        if (!Util.isEmpty(this.situacao)) {
+            status = StatusAtivoInativo.getById(this.situacao);
         }
         return status;
+    }
+
+    /**
+     * @return the id
+     */
+    @JsonIgnore
+    public TipoPessoa getPessoaEnum() {
+        TipoPessoa pessoaEnum = null;
+
+        if (!Util.isEmpty(this.tipoPessoa)) {
+            pessoaEnum = TipoPessoa.getById(this.tipoPessoa);
+        }
+        return pessoaEnum;
     }
 }
