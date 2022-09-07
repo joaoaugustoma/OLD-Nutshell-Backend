@@ -2,7 +2,10 @@ package br.ueg.nutshell.application.model;
 
 import br.ueg.nutshell.application.configuration.Constante;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
+import br.ueg.nutshell.application.enums.TipoPessoa;
+import br.ueg.nutshell.application.enums.converter.StatusAtivoInativoConverter;
 import br.ueg.nutshell.application.enums.converter.StatusSimNaoConverter;
+import br.ueg.nutshell.application.enums.converter.TipoPessoaConverter;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -35,12 +38,12 @@ class Fornecedor {
     @Column(name = "CPF_CNPJ_FORNECEDOR", length = 100, nullable = false)
     private String cpfCnpj;
 
-    @EqualsAndHashCode.Exclude
-    @JoinColumn(name = "ID_TIPO_FORNECEDOR", referencedColumnName = "ID_TIPO_FORNECEDOR", nullable = false)
+    @Convert(converter = TipoPessoaConverter.class)
+    @Column(name = "TIPO_PESSOA", nullable = false, length = 1)
     private TipoPessoa tipoPessoa;
 
-    @Convert(converter = StatusSimNaoConverter.class)
-    @Column(name = "E_FORNECEDOR", length = 1, nullable = false)
+    @Convert(converter = StatusAtivoInativoConverter.class)
+    @Column(name = "STAT_FORNECEDOR", length = 1, nullable = false)
     private StatusAtivoInativo situacao;
 
 }

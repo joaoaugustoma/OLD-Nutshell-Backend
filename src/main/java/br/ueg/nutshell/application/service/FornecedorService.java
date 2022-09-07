@@ -1,6 +1,6 @@
 /*
- * UsuarioService.java
- * Copyright (c) UEG.
+ * FornecedorService.java
+ * Copyright (c) João Augusto Moreira Ananias.
  *
  *
  *
@@ -9,15 +9,13 @@
 package br.ueg.nutshell.application.service;
 
 import br.ueg.nutshell.application.configuration.Constante;
-import br.ueg.nutshell.application.dto.*;
+import br.ueg.nutshell.application.dto.FiltroFornecedorDTO;
+import br.ueg.nutshell.application.dto.FornecedorDTO;
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
 import br.ueg.nutshell.application.exception.SistemaMessageCode;
 import br.ueg.nutshell.application.model.Fornecedor;
-import br.ueg.nutshell.application.model.TelefoneUsuario;
-import br.ueg.nutshell.application.model.Usuario;
-import br.ueg.nutshell.application.model.UsuarioGrupo;
+import br.ueg.nutshell.application.model.Fornecedor;
 import br.ueg.nutshell.application.repository.FornecedorRepository;
-import br.ueg.nutshell.application.repository.UsuarioRepository;
 import br.ueg.nutshell.comum.exception.BusinessException;
 import br.ueg.nutshell.comum.util.CollectionUtil;
 import br.ueg.nutshell.comum.util.Util;
@@ -25,7 +23,6 @@ import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.design.JasperDesign;
 import net.sf.jasperreports.engine.xml.JRXmlLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +37,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Classe de négocio referente a entidade {@link Usuario}.
+ * Classe de négocio referente a entidade {@link Fornecedor}.
  *
  * @author UEG
  */
@@ -52,10 +49,15 @@ public class FornecedorService {
 	private FornecedorRepository fornecedorRepository;
 
 	@Autowired
+	public void setFornecedorRepository(FornecedorRepository fornecedorRepository){
+		this.fornecedorRepository=fornecedorRepository;
+	}
+
+	@Autowired
 	private DataSource dataSource;
 
 	/**
-     * Persiste os dados do {@link Usuario}.
+     * Persiste os dados do {@link Fornecedor}.
      *
      * @param fornecedor
      * @return
@@ -70,7 +72,6 @@ public class FornecedorService {
 			LocalDate data = LocalDate.now();
 			fornecedor.setDataCadastrado(data);
 			fornecedor.setDataAtualizado(data);
-			//usuario.setNome(user.getFirstName().concat(user.getLastName()));
 
 		} else {
 			Fornecedor fornecedorExistente = getById(fornecedor.getId());
@@ -90,7 +91,7 @@ public class FornecedorService {
      * @param fornecedor
      */
 	private void validarFornecedorDuplicadoPorCpfCnpj(final Fornecedor fornecedor) {
-		Long count = fornecedorRepository.countByCpfCnpjlAndNotId(fornecedor.getCpfCnpj(), fornecedor.getId());
+		Long count = fornecedorRepository.countByCpfCnpj(fornecedor.getCpfCnpj());
 
 		if ( (count > BigDecimal.ONE.longValue() && fornecedor.getId()!=null) ||
 				(count > BigDecimal.ZERO.longValue() && fornecedor.getId()==null)
@@ -132,7 +133,7 @@ public class FornecedorService {
 	}
 
     /**
-     * Retorna a Lista de {@link UsuarioDTO} conforme o filtro pesquisado.
+     * Retorna a Lista de {@link FornecedorDTO} conforme o filtro pesquisado.
      * 
      * @param filtroDTO
      * @return
@@ -151,7 +152,7 @@ public class FornecedorService {
 
     /**
      * Verifica se pelo menos um campo de pesquisa foi informado, e se informado o
-     * nome do Grupo, verifica se tem pelo meno 4 caracteres.
+     * nome do Fornecedor, verifica se tem pelo meno 4 caracteres.
      *
      * @param filtroDTO
      */
@@ -170,11 +171,11 @@ public class FornecedorService {
 			vazio = Boolean.FALSE;
 		}
 
-		if (!Util.isEmpty(filtroDTO.getIdStatus())) {
+		if (!Util.isEmpty(filtroDTO.getSituacao())) {
 			vazio = Boolean.FALSE;
 		}
 
-		if (!Util.isEmpty(filtroDTO.getNomeTipoPessoa())) {
+		if (!Util.isEmpty(filtroDTO.getTipoPessoa())) {
 			vazio = Boolean.FALSE;
 		}
 
@@ -189,7 +190,7 @@ public class FornecedorService {
 
 
     /**
-     * Retorna a instância de {@link Usuario} conforme o 'id' informado.
+     * Retorna a instância de {@link Fornecedor} conforme o 'id' informado.
      *
      * @param id -
      * @return -
@@ -226,7 +227,7 @@ public class FornecedorService {
 	/**
 	 * Verifica se o CPF informado é válido.
 	 * 
-	 * @param cpf
+	 * @param cpfCnpj
 	 * @return
 	 */
 	private boolean isCpfCnpjValido(final String cpfCnpj) {
@@ -239,17 +240,30 @@ public class FornecedorService {
 	}
 
 	/**
-	 * Verifica se o CPF informado é válido e se está em uso.
-	 * 
-	 * @param cpf
+	 * Retorna a instância de {@link Fornecedor} conforme o 'cpf' informado.
+	 *
+	 * @param cpfCnpj
+	 * @return
 	 */
-	public void validarCpfCnpj(final String cpfCnpj) {
-		validarCpf(cpfCnpj, null);
+	public Fornecedor findByCpfCnpjFornecedor(final String cpfCnpj) {
+		return fornecedorRepository.findByCpfCnpj(cpfCnpj);
+	}
+
+	/**
+	 * Retorna a instância do {@link Fornecedor} conforme o 'cpf' informado
+	 * e que não tenha o 'id' informado.
+	 *
+	 * @param cpfCnpj
+	 * @param id
+	 * @return
+	 */
+	public Fornecedor findByCpfCnpjFornecedorAndNotId(final String cpfCnpj, final Long id) {
+		return fornecedorRepository.findByCpfCnpjAndNotId(cpfCnpj, id);
 	}
 
 	/**
 	 * Verifica se o CPF informado é válido e se está em uso.
-	 * 
+	 *
 	 * @param cpfCnpj
 	 * @param id
 	 */
@@ -258,27 +272,27 @@ public class FornecedorService {
 			throw new BusinessException(SistemaMessageCode.ERRO_CPF_INVALIDO);
 		}
 
-		Usuario usuario;
+		Fornecedor fornecedor;
 
 		if (id == null) {
-			usuario = findByCpfUsuario(cpf);
+			fornecedor = findByCpfCnpjFornecedor(cpfCnpj);
 		} else {
-			usuario = findByCpfUsuarioAndNotId(cpf, id);
+			fornecedor = findByCpfCnpjFornecedorAndNotId(cpfCnpj, id);
 		}
 
-		if (usuario != null) {
+		if (fornecedor != null) {
 			throw new BusinessException(SistemaMessageCode.ERRO_CPF_EM_USO);
 		}
 	}
-	public JasperPrint gerarRelatorio(Long idGrupo){
+	public JasperPrint gerarRelatorio(Long idFornecedor){
 		try {
 			Connection connection = dataSource.getConnection();
 			Map<String, Object> params = new HashMap<>();
-			params.put("id_grupo",idGrupo);
+			params.put("id_grupo",idFornecedor);
 			JasperDesign jd =
 					JRXmlLoader.load(
 							this.getClass()
-									.getResourceAsStream("/relatorios/usuarios_por_grupo.jrxml"));
+									.getResourceAsStream("/relatorios/fornecedores.jrxml"));
 			JasperReport jasperReport = JasperCompileManager.compileReport(jd);
 			JasperPrint jasperPrint =
 					JasperFillManager.fillReport(jasperReport, params, connection);
@@ -290,5 +304,19 @@ public class FornecedorService {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * Retorna uma lista de {@link Fornecedor} cadatrados .
+	 *
+	 * @return
+	 */
+	public List<Fornecedor> getCadastrados() {
+		List<Fornecedor> fornecedores = fornecedorRepository.findAll();
+
+		if (CollectionUtil.isEmpty(fornecedores)) {
+			throw new BusinessException(SistemaMessageCode.ERRO_NENHUM_REGISTRO_ENCONTRADO);
+		}
+		return fornecedores;
 	}
 }
