@@ -2,6 +2,7 @@ package br.ueg.nutshell.application;
 
 import br.ueg.nutshell.application.enums.StatusAtivoInativo;
 import br.ueg.nutshell.application.enums.StatusSimNao;
+import br.ueg.nutshell.application.enums.TipoPessoa;
 import br.ueg.nutshell.application.model.*;
 import br.ueg.nutshell.application.repository.*;
 import org.slf4j.Logger;
@@ -55,6 +56,9 @@ public class AppStartupRunner implements ApplicationRunner {
     @Autowired
     AmigoRepository amigoRepository;
 
+    @Autowired
+    FornecedorRepository fornecedorRepository;
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         LOG.info("Application started with option names : {}",
@@ -79,13 +83,35 @@ public class AppStartupRunner implements ApplicationRunner {
 
         Modulo moduloAmigo = createModuloAmigo();
 
-        Grupo grupo = createGrupoAdmin(Arrays.asList(moduloUsuario, moduloGrupo,moduloTipoAmigo, moduloAmigo));
+        Modulo moduloFornecedores = createModuloFornecedores();
+
+        Grupo grupo = createGrupoAdmin(Arrays.asList(moduloUsuario, moduloGrupo,moduloTipoAmigo, moduloAmigo, moduloFornecedores));
 
         createUsuarioAdmin(grupo);
 
         createTipoAmigos();
         createAmigos();
+        createFornecedores();
     }
+
+    /**
+     * cria dados de fornecedores para teste
+     */
+    private void createFornecedores() {
+
+        Fornecedor fornecedor = new Fornecedor();
+
+        fornecedor.setDataCadastrado(LocalDate.now());
+        fornecedor.setDataAtualizado(LocalDate.now());
+        fornecedor.setRazaoSocial( "TESTE AAAAA");
+        fornecedor.setNomeFantasia("PQP EU NÃO AGUENTO MAIS");
+        fornecedor.setCpfCnpj("12312312312");
+        fornecedor.setTipoPessoa(TipoPessoa.PESSOA_FISICA);
+        fornecedor.setSituacao(StatusAtivoInativo.ATIVO);
+
+        fornecedorRepository.save(fornecedor);
+    }
+
 
     /**
      * cria dados de amigo para tese
@@ -110,9 +136,6 @@ public class AppStartupRunner implements ApplicationRunner {
         conhecido.setTipo(tipoConhecido);
 
         amigoRepository.save(conhecido);
-
-
-
     }
 
     /**
@@ -204,6 +227,39 @@ public class AppStartupRunner implements ApplicationRunner {
         moduloAmigo = moduloRepository.save(moduloAmigo);
 
         return moduloAmigo;
+    }
+
+    private Modulo createModuloFornecedores() {
+        Modulo moduloFornecedores = new Modulo();
+
+        moduloFornecedores.setMnemonico("FORNECEDOR");
+        moduloFornecedores.setNome("Manter Fornecedores ");
+        moduloFornecedores.setStatus(StatusAtivoInativo.ATIVO);
+        moduloFornecedores = moduloRepository.save(moduloFornecedores);
+
+        Set<Funcionalidade> funcionalidades = getFuncionalidadesCrud();
+
+        Funcionalidade fManter = new Funcionalidade();
+        fManter.setMnemonico("REMOVER");
+        fManter.setNome("Remover");
+        fManter.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fManter);
+
+        Funcionalidade fFornecedor = new Funcionalidade();
+        fFornecedor.setMnemonico("STATUS");
+        fFornecedor.setNome("Ativo");
+        fFornecedor.setStatus(StatusAtivoInativo.ATIVO);
+        funcionalidades.add(fFornecedor);
+
+
+        for(Funcionalidade funcionalidade: funcionalidades){
+            funcionalidade.setModulo(moduloFornecedores);
+        }
+
+        moduloFornecedores.setFuncionalidades(funcionalidades);
+        moduloFornecedores = moduloRepository.save(moduloFornecedores);
+
+        return moduloFornecedores;
     }
 
     private void createUsuarioAdmin(Grupo grupo) {
