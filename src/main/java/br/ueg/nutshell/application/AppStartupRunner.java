@@ -239,19 +239,6 @@ public class AppStartupRunner implements ApplicationRunner {
 
         Set<Funcionalidade> funcionalidades = getFuncionalidadesCrud();
 
-        Funcionalidade fManter = new Funcionalidade();
-        fManter.setMnemonico("REMOVER");
-        fManter.setNome("Remover");
-        fManter.setStatus(StatusAtivoInativo.ATIVO);
-        funcionalidades.add(fManter);
-
-        Funcionalidade fFornecedor = new Funcionalidade();
-        fFornecedor.setMnemonico("STATUS");
-        fFornecedor.setNome("Ativo");
-        fFornecedor.setStatus(StatusAtivoInativo.ATIVO);
-        funcionalidades.add(fFornecedor);
-
-
         for(Funcionalidade funcionalidade: funcionalidades){
             funcionalidade.setModulo(moduloFornecedores);
         }
